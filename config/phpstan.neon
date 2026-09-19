@@ -1,0 +1,19 @@
+# The tool-level base, included by everything analysed with PHPStan: an application through
+# `phpstan-app.neon` next to this file, a bundle directly. It names no paths — those are the one thing that
+# differs between installations and belong in the including file.
+
+parameters:
+    dynamicConstantNames:
+        - YII_DEBUG
+        - YII_ENV
+        - YII_ENV_DEV
+        - YII_ENV_PROD
+        - YII_ENV_TEST
+
+    level: 7
+
+    earlyTerminatingMethodCalls:
+        yii\base\Application:
+            - end
+        yii\base\ErrorHandler:
+            - convertExceptionToError

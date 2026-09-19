@@ -1,0 +1,59 @@
+#!/bin/sh
+
+# The three gates a change has to pass — code style, static analysis and the test suite — run against the
+# working tree of whichever installation this is called from. `composer check` and the committed pre-push
+# hook are both this file, so what is run by hand and what is run before a push cannot drift apart.
+#
+# It lives in this package rather than in each project so that the same is true across repositories: a change
+# to the gates reaches every installation with a `composer update`, instead of being copied by hand into
+# projects that then drift from one another.
+#
+# A push to a branch with a deploy path deploys it, and nothing on the way there runs these checks, so this is
+# the only gate between a broken commit and the server.
+#
+# The style fixer runs first because it is the cheapest of the three and the one most easily forgotten, so a
+# missing `composer cs-fix` is answered in seconds rather than after the suite. All three have to pass either
+# way; only how soon you hear about it changes.
+#
+# `check` never rewrites a file: this runs against a commit that is already made, and a fixer that edited the
+# tree here would leave the correction behind, unpushed, in exactly the state the check was meant to prevent.
+
+set -e
+
+# Composer links this file into `vendor/bin`, so `dirname "$0"` is that directory rather than the root of the
+# installation being checked. The root is found by walking up from the working directory for the
+# `vendor/autoload.php` the tools below are reached through — the same answer whether Composer, the hook or a
+# hand-run from a subdirectory invoked this, and one that survives a custom `config.vendor-dir` and a package
+# symlinked from a path repository, both of which a path derived from "$0" would get wrong.
+root=$PWD
+
+while [ ! -f "$root/vendor/autoload.php" ]; do
+    if [ "$root" = / ]; then
+        echo "check: no vendor/autoload.php in $PWD or any of its parent directories." >&2
+        exit 1
+    fi
+
+    root=$(dirname "$root")
+done
+
+cd "$root"
+
+export XDEBUG_MODE=off
+
+echo "==> Code style"
+vendor/bin/php-cs-fixer check --diff
+
+echo "==> Static analysis"
+php -d memory_limit=1G vendor/bin/phpstan
+
+# The test database persists between runs, so a migration added since the last one would otherwise surface as
+# an unexplained failure in the suite below. Migrating is idempotent and prints nothing when there is nothing
+# to apply. `config/test.php` falls back to the gitignored `config/db.php`, so nothing needs to be exported.
+# A bundle has no entry script and no database of its own, which is what the guard is for.
+if [ -x ./yii ]; then
+    echo "==> Test database"
+    YII_ENV=test ./yii migrate --interactive=0 --skip-backup
+fi
+
+echo "==> Tests"
+php -d memory_limit=1G vendor/bin/phpunit

@@ -1,0 +1,19 @@
+# What an application adds to the base: `Yii.php` and the stub that give PHPStan the `Yii` class, which is
+# assembled at runtime and so is invisible to it otherwise.
+#
+# The paths are written against the working directory rather than this file because the skeleton sits beside
+# this package in `vendor` in an application but is the root of the analysis in its own repository, and only
+# the former has a fixed relationship to where PHPStan is run from. `bin/check` runs it from the root.
+#
+# A bundle includes `phpstan.neon` instead and names the skeleton itself.
+
+includes:
+    - phpstan.neon
+
+parameters:
+    scanFiles:
+        - %currentWorkingDirectory%/vendor/davidhirtz/yii2-skeleton/Yii.php
+        - %currentWorkingDirectory%/vendor/yiisoft/yii2/BaseYii.php
+
+    stubFiles:
+        - %currentWorkingDirectory%/vendor/davidhirtz/yii2-skeleton/stubs/yii.stub
