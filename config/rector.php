@@ -6,6 +6,7 @@ use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use Rector\CodingStyle\Rector\FuncCall\ArraySpreadInsteadOfArrayMergeRector;
 use Rector\CodingStyle\Rector\FuncCall\CallUserFuncArrayToVariadicRector;
 use Rector\Config\RectorConfig;
+use Rector\Configuration\RectorConfigBuilder;
 use Rector\Php55\Rector\String_\StringClassNameToClassConstantRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddParamTypeFromPropertyTypeRector;
@@ -26,7 +27,7 @@ use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 //         __DIR__ . '/tests',
 //     ]);
 
-return static function (array $paths): RectorConfig {
+return static function (array $paths): RectorConfigBuilder {
     return RectorConfig::configure()
         ->withPhpSets(php83: true)
         ->withRules([
