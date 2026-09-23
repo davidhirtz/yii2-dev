@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
-use Rector\CodingStyle\Rector\FuncCall\ArraySpreadInsteadOfArrayMergeRector;
 use Rector\CodingStyle\Rector\FuncCall\CallUserFuncArrayToVariadicRector;
 use Rector\Config\RectorConfig;
 use Rector\Configuration\RectorConfigBuilder;
@@ -37,7 +36,6 @@ return static function (array $paths): RectorConfigBuilder {
             AddReturnTypeDeclarationBasedOnParentClassMethodRector::class,
             AddReturnTypeDeclarationRector::class,
             AddVoidReturnTypeWhereNoReturnRector::class,
-            ArraySpreadInsteadOfArrayMergeRector::class,
             CallUserFuncArrayToVariadicRector::class,
             DeclareStrictTypesRector::class,
             InlineConstructorDefaultToPropertyRector::class,
