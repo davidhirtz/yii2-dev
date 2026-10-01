@@ -33,6 +33,7 @@ return static function (array $paths, ?string $cacheFile = null): Config {
         ->setRules([
             '@PSR12' => true,
             '@PHP8x3Migration:risky' => true,
+            'no_unused_imports' => true,
         ])
         ->setCacheFile($cacheFile)
         ->setFinder(
