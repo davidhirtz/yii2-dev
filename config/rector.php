@@ -10,15 +10,12 @@ use Rector\Php55\Rector\String_\StringClassNameToClassConstantRector;
 use Rector\Php73\Rector\FuncCall\StringifyStrNeedlesRector;
 use Rector\Php73\Rector\String_\SensitiveHereNowDocRector;
 use Rector\Php80\Rector\Class_\StringableForToStringRector;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddParamTypeFromPropertyTypeRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddReturnTypeDeclarationBasedOnParentClassMethodRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddReturnTypeDeclarationRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictNativeCallRector;
-use Rector\TypeDeclaration\Rector\Property\AddPropertyTypeDeclarationRector;
 use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
-use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 
 // The shared Rector setup, used the same way as `php-cs-fixer.php` above it:
 //
@@ -36,14 +33,11 @@ return static function (array $paths): RectorConfigBuilder {
     return RectorConfig::configure()
         ->withPhpSets(php83: true)
         ->withRules([
-            AddOverrideAttributeToOverriddenMethodsRector::class,
             AddParamTypeFromPropertyTypeRector::class,
-            AddPropertyTypeDeclarationRector::class,
             AddReturnTypeDeclarationBasedOnParentClassMethodRector::class,
             AddReturnTypeDeclarationRector::class,
             AddVoidReturnTypeWhereNoReturnRector::class,
             CallUserFuncArrayToVariadicRector::class,
-            DeclareStrictTypesRector::class,
             InlineConstructorDefaultToPropertyRector::class,
             ReturnTypeFromStrictNativeCallRector::class,
             StringClassNameToClassConstantRector::class,
