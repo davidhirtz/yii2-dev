@@ -32,7 +32,8 @@ return static function (array $paths, ?string $cacheFile = null): Config {
         ->setRiskyAllowed(true)
         ->setRules([
             '@PSR12' => true,
-            '@PHP8x3Migration:risky' => true,
+            // the minimum PHP of the project's composer.json, like Rector's `withPhpSets()`
+            '@autoPHPMigration:risky' => true,
             'no_unused_imports' => true,
         ])
         ->setCacheFile($cacheFile)

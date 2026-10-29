@@ -31,7 +31,7 @@ use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
 
 return static function (array $paths): RectorConfigBuilder {
     return RectorConfig::configure()
-        ->withPhpSets(php83: true)
+        ->withPhpSets()
         ->withRules([
             AddParamTypeFromPropertyTypeRector::class,
             AddReturnTypeDeclarationBasedOnParentClassMethodRector::class,
