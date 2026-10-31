@@ -63,7 +63,7 @@ return $config([
 
 `rector.php` is the same shape against `config/rector.php`.
 Rector 2.8 dropped the rule adding `#[Override]`, so `config/rector.php` brings its own
-(`Hirtz\Dev\Rector\AddOverrideAttributeRector`).
+(`Hirtz\Dev\Rector\AddOverrideAttributeRector`), on properties too where `require.php` starts at 8.5.
 
 `phpstan.neon` includes `config/phpstan-app.neon`, which adds the skeleton's `Yii.php` and stub to the base
 in `config/phpstan.neon`. A bundle, which is analysed from its own root rather than from an application that
