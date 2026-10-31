@@ -22,6 +22,11 @@
     "symfony/var-dumper": "^7.4",
     "yiisoft/yii2-debug": "^2.1"
   },
+  "autoload": {
+    "psr-4": {
+      "Hirtz\\Dev\\": "src/"
+    }
+  },
   "bin": [
     "bin/check"
   ],

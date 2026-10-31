@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Hirtz\Dev\Rector\AddOverrideAttributeRector;
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use Rector\CodingStyle\Rector\FuncCall\CallUserFuncArrayToVariadicRector;
 use Rector\Config\RectorConfig;
@@ -33,6 +34,7 @@ return static function (array $paths): RectorConfigBuilder {
     return RectorConfig::configure()
         ->withPhpSets()
         ->withRules([
+            AddOverrideAttributeRector::class,
             AddParamTypeFromPropertyTypeRector::class,
             AddReturnTypeDeclarationBasedOnParentClassMethodRector::class,
             AddReturnTypeDeclarationRector::class,
