@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hirtz\Dev\Rector;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\Node\Attribute;
 use PhpParser\Node\AttributeGroup;
@@ -29,8 +30,8 @@ use Rector\ValueObject\PhpVersion;
 
 /**
  * Rector's deprecated `AddOverrideAttributeToOverriddenMethodsRector` by default, minus its exemptions of `setUp()`,
- * `tearDown()` and anonymous classes: an interface method and a parent's abstract or empty one (no statement, a lone
- * `return null;` or `throw`) stay unattributed. From a minimum of PHP 8.5 a property counts too, but not a promoted
+ * `tearDown()` and anonymous classes, and an interface method counts too: a parent's abstract or empty one (no statement,
+ * a lone `return null;` or `throw`) stays unattributed. From a minimum of PHP 8.5 a property counts too, but not a promoted
  * one: Rector would print its attribute on a line of its own.
  */
 final class AddOverrideAttributeRector extends AbstractRector
@@ -45,14 +46,15 @@ final class AddOverrideAttributeRector extends AbstractRector
 
     public function getRuleDefinition(): RuleDefinition
     {
-        return new RuleDefinition('Add #[Override] to a method overriding a parent class method', [
+        return new RuleDefinition('Add #[Override] to a method overriding a parent class or interface method', [
             new CodeSample(
                 'class Child extends Base { public function init() {} }',
-                'class Child extends Base { #[\Override] public function init() {} }',
+                'class Child extends Base { #[Override] public function init() {} }',
             ),
         ]);
     }
 
+    #[Override]
     public function getNodeTypes(): array
     {
         return [Class_::class];
@@ -61,19 +63,22 @@ final class AddOverrideAttributeRector extends AbstractRector
     /**
      * @param Class_ $node
      */
+    #[Override]
     public function refactor(Node $node): ?Node
     {
         $className = $this->getName($node);
 
-        if ($className === null || !$node->extends || !$this->reflectionProvider->hasClass($className)) {
+        if ($className === null || (!$node->extends && !$node->implements) || !$this->reflectionProvider->hasClass($className)) {
             return null;
         }
 
-        $parents = $this->reflectionProvider->getClass($className)->getParents();
+        $class = $this->reflectionProvider->getClass($className);
+        $parents = $class->getParents();
+        $interfaces = $class->getInterfaces();
         $hasChanged = false;
 
         foreach ($node->getMethods() as $method) {
-            if ($this->shouldAddAttribute($method, $parents)) {
+            if ($this->shouldAddAttribute($method, $parents, $interfaces)) {
                 $this->addAttribute($method);
                 $hasChanged = true;
             }
@@ -135,8 +140,9 @@ final class AddOverrideAttributeRector extends AbstractRector
 
     /**
      * @param list<ClassReflection> $parents
+     * @param array<string, ClassReflection> $interfaces
      */
-    private function shouldAddAttribute(ClassMethod $method, array $parents): bool
+    private function shouldAddAttribute(ClassMethod $method, array $parents, array $interfaces): bool
     {
         $name = $method->name->toString();
 
@@ -160,6 +166,12 @@ final class AddOverrideAttributeRector extends AbstractRector
             $parentMethod = $this->findClassMethod($parent, $name);
 
             if ($parentMethod !== null && !$this->isMeantToBeImplemented($parentMethod)) {
+                return true;
+            }
+        }
+
+        foreach ($interfaces as $interface) {
+            if ($interface->hasNativeMethod($name)) {
                 return true;
             }
         }
